@@ -252,6 +252,7 @@ class EloquentHasManyThroughTest extends DatabaseTestCase
         );
 
         $this->assertTrue($article->wasRecentlyCreated);
+        $this->assertFalse($article->wasRecentlyUpdated);
         $this->assertEquals('Laravel Forever', $article->title);
         $this->assertTrue($tony->is($article->user));
     }

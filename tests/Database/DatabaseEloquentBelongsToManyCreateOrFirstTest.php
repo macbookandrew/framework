@@ -369,6 +369,7 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
                 ]);
                 $instance->exists = true;
                 $instance->wasRecentlyCreated = true;
+                $instance->wasRecentlyUpdated = false;
                 $instance->syncOriginal();
                 $relation
                     ->expects('firstOrCreate')
@@ -411,6 +412,7 @@ class DatabaseEloquentBelongsToManyCreateOrFirstTest extends TestCase
                 ]);
                 $instance->exists = true;
                 $instance->wasRecentlyCreated = false;
+                $instance->wasRecentlyUpdated = true;
                 $instance->syncOriginal();
                 $relation
                     ->expects('firstOrCreate')
