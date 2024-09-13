@@ -124,6 +124,7 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
 
         $result = $parent->children()->firstOrCreate(['attr' => 'foo'], ['val' => 'bar']);
         $this->assertTrue($result->wasRecentlyCreated);
+        $this->assertFalse($result->wasRecentlyUpdated);
         $this->assertEquals([
             'id' => 789,
             'attr' => 'foo',
@@ -256,6 +257,7 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
 
         $result = $parent->children()->updateOrCreate(['attr' => 'foo'], ['val' => 'baz']);
         $this->assertTrue($result->wasRecentlyCreated);
+        $this->assertFalse($result->wasRecentlyUpdated);
         $this->assertEquals([
             'id' => 789,
             'attr' => 'foo',
@@ -301,6 +303,7 @@ class DatabaseEloquentHasManyThroughCreateOrFirstTest extends TestCase
 
         $result = $parent->children()->updateOrCreate(['attr' => 'foo'], ['val' => 'baz']);
         $this->assertFalse($result->wasRecentlyCreated);
+        $this->assertTrue($result->wasRecentlyUpdated);
         $this->assertEquals([
             'id' => 789,
             'pivot_id' => 456,

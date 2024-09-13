@@ -134,6 +134,7 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
 
         $result = $model->newQuery()->firstOrCreate(['attr' => 'foo'], ['val' => 'bar']);
         $this->assertTrue($result->wasRecentlyCreated);
+        $this->assertFalse($result->wasRecentlyUpdated);
         $this->assertEquals([
             'id' => 123,
             'attr' => 'foo',
@@ -213,6 +214,7 @@ class DatabaseEloquentBuilderCreateOrFirstTest extends TestCase
 
         $result = $model->newQuery()->updateOrCreate(['attr' => 'foo'], ['val' => 'baz']);
         $this->assertFalse($result->wasRecentlyCreated);
+        $this->assertTrue($result->wasRecentlyUpdated);
         $this->assertEquals([
             'id' => 123,
             'attr' => 'foo',

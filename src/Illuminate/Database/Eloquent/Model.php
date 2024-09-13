@@ -117,6 +117,13 @@ abstract class Model implements Arrayable, ArrayAccess, CanBeEscapedWhenCastToSt
     public $wasRecentlyCreated = false;
 
     /**
+     * Indicates if the model was updated during the object's lifecycle.
+     *
+     * @var bool
+     */
+    public $wasRecentlyUpdated = false;
+
+    /**
      * Indicates that the object's string representation should be escaped when __toString is invoked.
      *
      * @var bool
@@ -1235,6 +1242,8 @@ abstract class Model implements Arrayable, ArrayAccess, CanBeEscapedWhenCastToSt
             $this->setKeysForSaveQuery($query)->update($dirty);
 
             $this->syncChanges();
+
+            $this->wasRecentlyUpdated = true;
 
             $this->fireModelEvent('updated', false);
         }
