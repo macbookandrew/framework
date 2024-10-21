@@ -2,7 +2,6 @@
 
 namespace Illuminate\Session;
 
-use BackedEnum;
 use Closure;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Arr;
@@ -12,6 +11,8 @@ use Illuminate\Support\Traits\Macroable;
 use Illuminate\Support\ViewErrorBag;
 use SessionHandlerInterface;
 use stdClass;
+
+use function Illuminate\Support\enum_value;
 
 class Store implements Session
 {
@@ -260,14 +261,14 @@ class Store implements Session
     /**
      * Checks if a key exists.
      *
-     * @param  string|\BackedEnum|array  $key
+     * @param  string|\BackedEnum|\UnitEnum|array  $key
      * @return bool
      */
     public function exists($key)
     {
         $placeholder = new stdClass;
 
-        $key = $key instanceof BackedEnum ? $key->value : $key;
+        $key = enum_value($key);
 
         return ! collect(is_array($key) ? $key : func_get_args())->contains(function ($key) use ($placeholder) {
             return $this->get($key, $placeholder) === $placeholder;
@@ -277,7 +278,7 @@ class Store implements Session
     /**
      * Determine if the given key is missing from the session data.
      *
-     * @param  string|\BackedEnum|array  $key
+     * @param  string|\BackedEnum|\UnitEnum|array  $key
      * @return bool
      */
     public function missing($key)
@@ -288,12 +289,12 @@ class Store implements Session
     /**
      * Determine if a key is present and not null.
      *
-     * @param  string|\BackedEnum|array  $key
+     * @param  string|\BackedEnum|\UnitEnum|array  $key
      * @return bool
      */
     public function has($key)
     {
-        $key = $key instanceof BackedEnum ? $key->value : $key;
+        $key = enum_value($key);
 
         return ! collect(is_array($key) ? $key : func_get_args())->contains(function ($key) {
             return is_null($this->get($key));
@@ -303,12 +304,12 @@ class Store implements Session
     /**
      * Determine if any of the given keys are present and not null.
      *
-     * @param  string|\BackedEnum|array  $key
+     * @param  string|\BackedEnum|\UnitEnum|array  $key
      * @return bool
      */
     public function hasAny($key)
     {
-        $key = $key instanceof BackedEnum ? $key->value : $key;
+        $key = enum_value($key);
 
         return collect(is_array($key) ? $key : func_get_args())->filter(function ($key) {
             return ! is_null($this->get($key));
@@ -318,33 +319,31 @@ class Store implements Session
     /**
      * Get an item from the session.
      *
-     * @param  string|\BackedEnum  $key
+     * @param  string|\BackedEnum|\UnitEnum  $key
      * @param  mixed  $default
      * @return mixed
      */
     public function get($key, $default = null)
     {
-        $key = $key instanceof BackedEnum ? $key->value : $key;
-
-        return Arr::get($this->attributes, $key, $default);
+        return Arr::get($this->attributes, enum_value($key), $default);
     }
 
     /**
      * Get the value of a given key and then forget it.
      *
-     * @param  string|\BackedEnum  $key
+     * @param  string|\BackedEnum|\UnitEnum  $key
      * @param  mixed  $default
      * @return mixed
      */
     public function pull($key, $default = null)
     {
-        return Arr::pull($this->attributes, $key, $default);
+        return Arr::pull($this->attributes, enum_value($key), $default);
     }
 
     /**
      * Determine if the session contains old input.
      *
-     * @param  string|\BackedEnum|null  $key
+     * @param  string|\BackedEnum|\UnitEnum|null  $key
      * @return bool
      */
     public function hasOldInput($key = null)
@@ -357,13 +356,13 @@ class Store implements Session
     /**
      * Get the requested item from the flashed input array.
      *
-     * @param  string|\BackedEnum|null  $key
+     * @param  string|\BackedEnum|\UnitEnum|null  $key
      * @param  mixed  $default
      * @return mixed
      */
     public function getOldInput($key = null, $default = null)
     {
-        return Arr::get($this->get('_old_input', []), $key, $default);
+        return Arr::get($this->get('_old_input', []), enum_value($key), $default);
     }
 
     /**
@@ -380,13 +379,13 @@ class Store implements Session
     /**
      * Put a key / value pair or array of key / value pairs in the session.
      *
-     * @param  string|\BackedEnum|array  $key
+     * @param  string|\BackedEnum|\UnitEnum|array  $key
      * @param  mixed  $value
      * @return void
      */
     public function put($key, $value = null)
     {
-        $key = $key instanceof BackedEnum ? $key->value : $key;
+        $key = enum_value($key);
 
         if (! is_array($key)) {
             $key = [$key => $value];
@@ -400,7 +399,7 @@ class Store implements Session
     /**
      * Get an item from the session, or store the default value.
      *
-     * @param  string|\BackedEnum  $key
+     * @param  string|\BackedEnum|\UnitEnum  $key
      * @param  \Closure  $callback
      * @return mixed
      */
@@ -418,7 +417,7 @@ class Store implements Session
     /**
      * Push a value onto a session array.
      *
-     * @param  string|\BackedEnum  $key
+     * @param  string|\BackedEnum|\UnitEnum  $key
      * @param  mixed  $value
      * @return void
      */
@@ -434,7 +433,7 @@ class Store implements Session
     /**
      * Increment the value of an item in the session.
      *
-     * @param  string|\BackedEnum  $key
+     * @param  string|\BackedEnum|\UnitEnum  $key
      * @param  int  $amount
      * @return mixed
      */
@@ -448,7 +447,7 @@ class Store implements Session
     /**
      * Decrement the value of an item in the session.
      *
-     * @param  string|\BackedEnum  $key
+     * @param  string|\BackedEnum|\UnitEnum  $key
      * @param  int  $amount
      * @return int
      */
@@ -460,7 +459,7 @@ class Store implements Session
     /**
      * Flash a key / value pair to the session.
      *
-     * @param  string|\BackedEnum  $key
+     * @param  string|\BackedEnum|\UnitEnum  $key
      * @param  mixed  $value
      * @return void
      */
@@ -476,7 +475,7 @@ class Store implements Session
     /**
      * Flash a key / value pair to the session for immediate use.
      *
-     * @param  string|\BackedEnum  $key
+     * @param  string|\BackedEnum|\UnitEnum  $key
      * @param  mixed  $value
      * @return void
      */
@@ -550,22 +549,24 @@ class Store implements Session
     /**
      * Remove an item from the session, returning its value.
      *
-     * @param  string|\BackedEnum  $key
+     * @param  string|\BackedEnum|\UnitEnum  $key
      * @return mixed
      */
     public function remove($key)
     {
-        return Arr::pull($this->attributes, $key);
+        return Arr::pull($this->attributes, enum_value($key));
     }
 
     /**
      * Remove one or many items from the session.
      *
-     * @param  string|\BackedEnum|array  $keys
+     * @param  string|\BackedEnum|\UnitEnum|array  $keys
      * @return void
      */
     public function forget($keys)
     {
+        $keys = collect($keys)->map(fn ($key) => enum_value($key))->all();
+
         Arr::forget($this->attributes, $keys);
     }
 
